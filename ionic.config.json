@@ -1,0 +1,8 @@
+{
+  "name": "DashBooks",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue",
+  "id": "d41cd4cc"
+}
