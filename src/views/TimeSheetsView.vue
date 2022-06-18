@@ -314,8 +314,6 @@ export default {
                     this.selectCell(element);
                     this.selectedCellsList.push(cellID);
                 }
-                const cellCol = cellID[0];
-                const cellNum = cellID.substring(1);
             }
 
 		},
