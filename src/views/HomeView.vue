@@ -143,6 +143,7 @@ export default {
                     this.netData.expenses += objDict.amount;
                     objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
                     this.expenseSum[objDict.category] += objDict.amount;
+                    objKey;
                 }
             }
         }else{
@@ -198,6 +199,7 @@ export default {
 					this.netData.expenses += objDict.amount
                     objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
                     this.expenseSum[objDict.category] += objDict.amount 
+                    objKey;
 				}
 			}
 		}
