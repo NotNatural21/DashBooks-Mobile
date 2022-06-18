@@ -211,6 +211,7 @@ export default {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
 }
 
 .tile_container{
@@ -239,9 +240,6 @@ export default {
 	align-items: center;
 	height: 50px;
 	width: 100%;
-}
-p{
-	margin: 0px;
 }
 .mid_display{
     display: flex;
@@ -361,6 +359,9 @@ p{
 </style>
 
 <style>
+p{
+	margin: 0px !important;
+}
 #container {
   text-align: center;
   position: absolute;
