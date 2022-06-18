@@ -5,7 +5,7 @@
                 <ion-buttons slot="start">
                     <ion-menu-button color="black"></ion-menu-button>
                 </ion-buttons>
-                <ion-title>Settings</ion-title>
+                <ion-title>Records</ion-title>
             </ion-toolbar>
         </ion-header>
         <ion-content> 
