@@ -15,8 +15,13 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import ('../views/SettingsView.vue')
     },
     {
-        path: '/folder/TimeSheets',
+        path: '/folder/Projects',
         component: () => import ('../views/ProjectView.vue')
+    },
+    {
+        path: '/TimeSheets',
+        name: 'TimeSheets',
+        component: () => import ('../views/TimeSheetsView.vue')
     },
     {
         path: '/folder/Invoicing',

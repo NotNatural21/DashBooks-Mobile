@@ -1,24 +1,27 @@
 <template>
     <ion-page>
         <ion-header :translucent="true">
-        <ion-toolbar>
-            <ion-buttons slot="start">
-                <ion-menu-button color="black"></ion-menu-button>
-            </ion-buttons>
-            <ion-title>Records</ion-title>
-        </ion-toolbar>
+            <ion-toolbar>
+                <ion-buttons slot="start">
+                    <ion-menu-button color="black"></ion-menu-button>
+                </ion-buttons>
+                <ion-title>Settings</ion-title>
+            </ion-toolbar>
         </ion-header>
-        <ion-content :fullscreen="true"> 
-            <!-- CONTENT GOES HERE -->
+        <ion-content> 
+            <div class="page">
+                
+            </div>
         </ion-content>
     </ion-page>
 </template>
 
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-
+import userDict from "../../public/userData.json"
+import $ from 'jquery'
 export default {
-    name: 'RecordView',
+    name: 'TimeSheetsView',
     components: {
         IonButtons,
         IonContent,
@@ -27,11 +30,31 @@ export default {
         IonPage,
         IonTitle,
         IonToolbar
+    },
+    data(){
+        return {
+
+        }
+    },
+    mounted(){
+        //hello
+    },
+    methods: {
+
     }
 };
 </script>
 
 
-<style scoped >
+<style>
 
+
+
+
+ion-toolbar{
+    --background: var(--primary)
+}
+ion-toolbar > *{
+    color: white;
+}
 </style>

@@ -169,9 +169,6 @@ export default {
             projectRequest: ''
         }
     },
-    mounted(){
-        //hello
-    },
     methods: {
         createForm(event, form){
             if(form.includes('Project') || form.includes('Colour')){
@@ -300,7 +297,7 @@ export default {
 </script>
 
 
-<style>
+<style scoped>
 #settingsBar{
     background-color: var(--secondary);
     width: 100%;

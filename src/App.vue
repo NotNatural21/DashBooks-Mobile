@@ -71,7 +71,7 @@ export default {
         },
         {
             title: 'TimeSheets',
-            url: '/folder/TimeSheets',
+            url: '/folder/Projects',
             iosIcon: briefcaseOutline,
             mdIcon: briefcaseOutline
         },
