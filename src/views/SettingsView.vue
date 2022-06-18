@@ -269,7 +269,6 @@ export default {
             });
         },
         editRecords(event, form){
-            const ID = $(event.target).attr('data');
             this.recordRequest = form;
             this.$nextTick(() => {
                 console.log($(".form_container")[0])
