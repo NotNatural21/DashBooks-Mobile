@@ -4,5 +4,16 @@ module.exports = defineConfig({
         experiments: {
             topLevelAwait: true,
         }
-    }
+    },
+
+    pluginOptions: {
+      quasar: {
+        importStrategy: 'kebab',
+        rtlSupport: false
+      }
+    },
+
+    transpileDependencies: [
+      'quasar'
+    ]
 })
