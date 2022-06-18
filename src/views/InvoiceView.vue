@@ -271,7 +271,7 @@ export default {
         this.isAccounts = userDict['records']['accounts'].length != 0;
         if(this.isProjects){
             this.projectKeys = []
-            Object.keys(userDict['projects']).forEach((projectID, index) => {
+            Object.keys(userDict['projects']).forEach((projectID) => {
                 this.projectKeys.push(projectID)
                 this.projectKeys.push(projectID)
             })
@@ -346,7 +346,7 @@ export default {
         },
         getFirstLastDate(arr){
             let dateObjArr = [];
-            arr.forEach((date, index) => {
+            arr.forEach((date) => {
                 let newDate = date.split('/');
                 newDate = `${newDate[1]}/${newDate[0]}/${newDate[2]}`;
                 let d = new Date(newDate);
@@ -354,7 +354,7 @@ export default {
             })
             let firstDate = dateObjArr[0];
             let lastDate = dateObjArr[0];
-            dateObjArr.forEach((date, index) => {
+            dateObjArr.forEach((date) => {
                 if(date.getTime() <= firstDate.getTime()){
                     firstDate = date;
                 }
