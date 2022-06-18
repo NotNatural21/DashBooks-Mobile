@@ -120,6 +120,12 @@ export default {
 .glossy{
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 51%, rgba(0, 0, 0, 0.04));
 }
+.page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
 </style>
 <style scoped>
 ion-menu ion-content {

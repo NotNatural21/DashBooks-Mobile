@@ -190,7 +190,6 @@ export default {
             this.invoiceRequest = ''
             this.recordRequest = ''
             this.archiveRequest = ''
-            $('.page').unbind('touchmove')
         },
         buttonSelect(event){
             $('.settings_button').each(function(i, obj) {

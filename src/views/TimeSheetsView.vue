@@ -10,18 +10,6 @@
         </ion-header>
         <ion-content> 
             <div class="page">
-                <div id="container">
-                    <div id="top_title" :style="{background: `${projectDict['colour'][0]}`, color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}">
-                        <template v-if="weekID !== ''">
-                            <p :style="{color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}">Complete </p>
-                            <p :style="{color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}" id="hours_left" style="font-weight: bold;"></p>
-                            <p :style="{color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}">more hours to reach {{ projectDict['targetHours'] }}H for {{ projectDict['name']}}</p>
-                        </template>
-                        <template v-else>
-                            Click on a week to get started!
-                        </template>
-                    </div>
-                </div>
                 <div id="time_Container">
                     <div id="weeks_container">
                         <template v-for="(weekDict, weekID) in projectDict['weeks']" :key="weekDict">
@@ -34,49 +22,58 @@
                         </template>
                         <div class="week_button" color="secondary" @click="addWeek" :style="{background: `radial-gradient(circle, ${projectDict['colour'][1]} 0%, ${projectDict['colour'][0]} 100%)`, color: `${pickTextColorBasedOnBgColor(projectDict['colour'][1])}`}">+</div>
                     </div>
-                    <div id="time_sheet_container" :style="{background: `${projectDict['colour'][0]}`, color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}">
-                        <template v-if="weekID != ``">
-                            <template v-for="(col, index) in columnLetter" :key="col">
-                                <div :colID="col" class="timesheet_column">
-                                    <div :cellID="`${col}-2`" class="dateCell">{{ dayList[index] }}</div>
-                                    <div :cellID="`${col}-1`" class="dateCell">{{ dateList[index] }}</div>
-                                    <template v-if="col == `Z`">
-                                        <div  v-for="(time, index) in timeList" :key="time" :cellID="`Z${index}`" class="dateCell">{{ time }}</div>
-                                    </template>
-                                    <template v-else>
-                                        <div  v-for="(time, index) in timeList" :key="time" :cellID="`${col}${index}`" class="cell" @mousedown="cellDown" @mouseover="cellHovered" @mouseup="cellRelease"/>
-                                    </template>
-                                    <!-- Colour Details -->
-                                    <template v-if="col == `Z`">
-                                        <div  v-for="(time, index) in colourList" :key="time" :cellID="`Z${index + timeList.length}`" class="dateCell">{{ time }}</div>
-                                    </template>
-                                    <template v-else>
-                                        <div  v-for="(time, index) in colourList" :key="time" :cellID="`${col}${index + timeList.length}`" class="dateCell"/>
-                                    </template>
-                                    <!-- Weekly Cells -->
-                                    <template v-if="col == `Z`">
-                                        <div  v-for="(time, index) in infoList" :key="time" :cellID="`Z${index + timeList.length + colourList.length}`" class="dateCell">{{ time }}</div>
-                                    </template>
-                                    <template v-if="col == `A`">
-                                        <div  v-for="(time, index) in infoList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length}`" class="infoCellA"></div>
-                                    </template>
-                                    <template v-if="col == `H`">
-                                        <div  v-for="(time, index) in infoList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length}`" class="infoCell"></div>
-                                    </template>
-                                    <!-- Total TimeSheet Cells -->
-                                    <template v-if="col == `Z`">
-                                        <div  v-for="(time, index) in totalList" :key="time" :cellID="`Z${index + timeList.length + colourList.length + 2}`" class="dateCell">{{ time }}</div>
-                                    </template>
-                                    <template v-if="col == `A` && weekInterval == 1">
-                                        <div  v-for="(time, index) in totalList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length + 2}`" class="totalCellOne"></div>
-                                    </template>
-                                    <template v-if="col == `A` && weekInterval == 2">
-                                        <div  v-for="(time, index) in totalList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length + 2}`" class="totalCellTwo"></div>
-                                    </template>
-                                </div>
+                    <div id="switch_container">
+                        Select Cells
+                        <label class="switch">
+                            <input id="switch_toggle" @click="toggleSelection" type="checkbox" checked>
+                            <span class="slider round"></span>
+                        </label>
+                        Scroll Timesheet
+                    </div>
+                    <div id="time_sheet_outer" :style="{background: `${projectDict['colour'][0]}`, color: `${pickTextColorBasedOnBgColor(projectDict['colour'][0])}`}">
+                        <div id="time_sheet_container">
+                            <template v-if="weekID != ``">
+                                <template v-for="(col, index) in columnLetter" :key="col">
+                                    <div :colID="col" class="timesheet_column">
+                                        <div :cellID="`${col}-2`" class="dateCell">{{ dayList[index] }}</div>
+                                        <div :cellID="`${col}-1`" class="dateCell">{{ dateList[index] }}</div>
+                                        <template v-if="col == `Z`">
+                                            <div  v-for="(time, index) in timeList" :key="time" :cellID="`Z${index}`" class="dateCell">{{ time }}</div>
+                                        </template>
+                                        <template v-else>
+                                            <div  v-for="(time, index) in timeList" :key="time" :cellID="`${col}${index}`" class="cell" @touchstart="cellDown" @touchmove="cellHovered" @touchend="cellRelease"/>
+                                        </template>
+                                        <!-- Colour Details -->
+                                        <template v-if="col == `Z`">
+                                            <div  v-for="(time, index) in colourList" :key="time" :cellID="`Z${index + timeList.length}`" class="dateCell">{{ time }}</div>
+                                        </template>
+                                        <template v-else>
+                                            <div  v-for="(time, index) in colourList" :key="time" :cellID="`${col}${index + timeList.length}`" class="dateCell"/>
+                                        </template>
+                                        <!-- Weekly Cells -->
+                                        <template v-if="col == `Z`">
+                                            <div  v-for="(time, index) in infoList" :key="time" :cellID="`Z${index + timeList.length + colourList.length}`" class="dateCell">{{ time }}</div>
+                                        </template>
+                                        <template v-if="col == `A`">
+                                            <div  v-for="(time, index) in infoList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length}`" class="infoCellA"></div>
+                                        </template>
+                                        <template v-if="col == `H`">
+                                            <div  v-for="(time, index) in infoList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length}`" class="infoCell"></div>
+                                        </template>
+                                        <!-- Total TimeSheet Cells -->
+                                        <template v-if="col == `Z`">
+                                            <div  v-for="(time, index) in totalList" :key="time" :cellID="`Z${index + timeList.length + colourList.length + 2}`" class="dateCell">{{ time }}</div>
+                                        </template>
+                                        <template v-if="col == `A` && weekInterval == 1">
+                                            <div  v-for="(time, index) in totalList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length + 2}`" class="totalCellOne"></div>
+                                        </template>
+                                        <template v-if="col == `A` && weekInterval == 2">
+                                            <div  v-for="(time, index) in totalList" :key="time" :cellID="`${col}${index + timeList.length + colourList.length + 2}`" class="totalCellTwo"></div>
+                                        </template>
+                                    </div>
+                                </template>
                             </template>
-                        </template>
-                        <div id="user_selection_tip" class ="tool_tip hidden">Time: </div>
+                        </div>
                     </div>
                     <div id="colour_container">
                         <div v-for="colourID in Object.keys(userObj['colours'])" :key="colourID" :colourid="colourID" class="colour_item" :style="`background-color:${userObj['colours'][colourID]['colour']};`" @click="colourCell">
@@ -85,9 +82,6 @@
                         <div class="colour_item" style="background-color: #000" @click="current_request_form=`createColourForm`">
                             <p style="color: #fff">+</p>
                         </div>
-                    </div>
-                    <div id="week_button_menu">
-                        <div class="context_option" @click="toggleCheckMark">Toggle Invoice Status</div>
                     </div>
                 </div>
             </div>
@@ -137,15 +131,17 @@ export default {
     beforeMount(){
         this.colourIDList = [];
         this.colourIDList = Object.keys(userDict['colours'])
-        const onMouseMove = (e) =>{
-			$('#user_selection_tip').css({
-				left: e.pageX + 55 + 'px',
-				top: e.pageY - 20 + 'px'
-			})
-		}
-		document.addEventListener('mousemove', onMouseMove);
     },
     methods: {
+        toggleSelection(){
+            if($('#switch_toggle')[0].checked){//User wants to scroll
+                $(`#time_sheet_container`).css({"overflow": "auto"});
+                $(`.cell`).css({"pointer-events": "none"});
+            }else{//User wants to select cells
+                $(`#time_sheet_container`).css({"overflow": "hidden"});
+                $(`.cell`).css({"pointer-events": "all"});
+            }
+        },
         rightClickWeek(e) {
             e.preventDefault();
 			let position = $(e.target).position();  
@@ -246,7 +242,7 @@ export default {
 				this.columnLetter = ['Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'];
 			}
             //Day list
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
             this.dayList = ['Day'];
             this.dateList.forEach(date => {
                 if(date != `Time | Date`){
@@ -310,50 +306,22 @@ export default {
 			}else{
 				this.selectedCellsList = []
 			}
-
-			let firstTimeID = "Z" + cellID.substring(1);
-			let firstTime = ($(`[cellid=${firstTimeID}]`).text()).split(":");
-			let timeSelected = this.selectedCellsList.length * Math.round((1/(60/this.projectDict['timeInterval'])) * 1000) / 1000;
-			let timePeriod = `${firstTime[0]}:${firstTime[1]} - ${firstTime[0]}:${parseInt(firstTime[1]) + this.timeInterval - 1}`
-			$('#user_selection_tip').text(`Time Selected: ${timeSelected.toFixed(2)}H\n${timePeriod} `);
-			$('#user_selection_tip').removeClass('hidden'); 
-
 		},
 		cellHovered(event){
-			const cellID = $(event.target).attr('cellid');
-			if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
-				this.selectCell(event.target);
-				this.selectedCellsList.push(cellID);
-
-				let timeSelected = this.selectedCellsList.length * parseFloat((this.projectDict['timeInterval']/60).toFixed(9))
-				let minTimeCell = "Z" + this.minCell(this.selectedCellsList);
-				let maxTimeCell = "Z" + this.maxCell(this.selectedCellsList);
-				let maxTime = ($(`[cellid=${maxTimeCell}]`).text()).split(":");
-				let timePeriod = `${$(`[cellid=${minTimeCell}]`).text()} - ${maxTime[0]}:${parseInt(maxTime[1]) + this.timeInterval - 1}`;
-				
-				$('#user_selection_tip').text(`Time Selected: ${timeSelected.toFixed(2)}H\n${timePeriod} `);
-			}
-
-			const cellCol = cellID[0];
-			const cellNum = cellID.substring(1);
-			$(`[cellid=${cellCol}-2]`).css({"background-color": "#D1D3D9"});
-			$(`[cellid=${cellCol}-1]`).css({"background-color": "#D1D3D9"});
-			$(`[cellid=Z${cellNum}]`).css({"background-color": "#D1D3D9"});
-			if(this.previousDate != cellCol){
-				$(`[cellid=${this.previousDate}-2]`).css({"background-color": "#ffffff"});
-				$(`[cellid=${this.previousDate}-1]`).css({"background-color": "#ffffff"});
-				this.previousDate = cellCol;
-			}
-			if(this.previousTime != cellNum){
-                $(`[cellid=Z${this.previousTime}]`).css({"background-color": "#ffffff"});
-				this.previousTime = parseInt(cellNum);
-			}
+            let element = document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
+			const cellID = $(element).attr('cellid');
+            if(cellID != undefined){
+                if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
+                    this.selectCell(element);
+                    this.selectedCellsList.push(cellID);
+                }
+                const cellCol = cellID[0];
+                const cellNum = cellID.substring(1);
+            }
 
 		},
 		cellRelease(){
 			this.cellClicked = false;
-			$('#user_selection_tip').addClass('hidden');
-			localStorage.setItem('selectedCellsList', this.selectedCellsList);
 		},
 		selectCell(element){
 			element.style.borderColor = "cyan";
@@ -518,7 +486,11 @@ export default {
 #time_Container{
     display: flex;
     align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 5px;
 }
 #top_title{
     margin-top: 5px;
@@ -541,23 +513,35 @@ export default {
 }
 #weeks_container{
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 10px;
-	width: 150px;
-	min-width: 150px;
-	padding-top: 10px;
-	height: calc(100vh - var(--navbar_height) - 10vh);
-	overflow-y: auto;
-	margin: 10px 10px 10px 10px;
-	border-radius: 10px;
-	background-color: #ffffff3b;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    border-radius: 10px;
+    background-color: #ffffff3b;
+    width: 100%;
+    overflow-x: auto;
 }
 
 #weeks_container > div{
-	width: 90%;
+	min-width: 100px;
+	width: 100px;
 	height: 30px;
     min-height: 30px;
+}
+
+#switch_container{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: smaller;
+}
+#time_sheet_outer{
+    width: 90%;
+    height: calc(100% - 105px);
+    overflow: auto;
+    border-radius: 10px;
 }
 
 #time_sheet_container{
@@ -565,27 +549,23 @@ export default {
 	flex-flow: row nowrap;
 	justify-content: flex-start;
 	align-items: flex-start;
-	width: 100%;
-	height: calc(100vh - var(--navbar_height) - 10vh);
-	overflow-y: auto;
+	width: calc(100% - 20px);
+	height: calc(100% - 20px);
 	margin: 10px 10px 10px 10px;
-	box-shadow: 0px 0px 10px -5px white inset, 0px 4px 16px -16px black;
-	overflow-x: auto;
-	border-radius: 10px;
-	background-color: #ffffff3b;
+    overflow: auto;
 }
 
 #colour_container{
+    position: absolute;
+    bottom: 0px;
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	align-items: center;
-	width: 200px;
-	min-width: 200px;
-	height: calc(100vh - var(--navbar_height) - 10vh);
+    width: 100%;
+    height: 50px;
+    padding: 0px 10px;
 	overflow-y: auto;
-	margin: 10px 10px 10px 10px;
 	border-radius: 10px;
-	background-color: #ffffff56;
 	font-family: 'Lato';
 }
 .week_button{
@@ -601,7 +581,7 @@ export default {
 	font-size: 17px;
 	font-weight: bold;
 	text-decoration: none;
-	border-radius: 30px;
+	border-radius: 10px;
 	overflow: hidden;
 	cursor: pointer;
 }
@@ -609,18 +589,23 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 90%;
-	height: 25px;
+	width: 100%;
+	height: 30px;
 	margin-top: 10px;
 	border-radius: 10px;
 	cursor: pointer;
-	border: 1px solid black
+	border: 1px solid black;
 }
 
 .colour_item p{
     pointer-events: none;
     font-family: 'Lato';
-    font-size: 17px;
+    font-size: 15px;
+    white-space: nowrap;
+    min-width: 100px;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: center;
 }
 
 .colour_item:hover{
@@ -630,26 +615,15 @@ export default {
 .timesheet_column{
 	width: 100%;
 	z-index: 2;
-	min-width: 90px;
+	min-width: 65px;
 	border-left: 1px solid black;
 	border-top: 1px solid black;
-    margin-top: 10px;
 }
 .timesheet_column:nth-child(1){
 	left: 0px;
 	z-index: 10;
 	position: sticky;
-	min-width: 140px;
-	margin-left: 10px;
-	border: 1px solid black;
-	pointer-events: none;
-}
-.timesheet_column:nth-child(1){
-	left: 0px;
-	z-index: 10;
-	position: sticky;
-	min-width: 140px;
-	margin-left: 10px;
+	min-width: 115px;
 	border: 1px solid black;
 	pointer-events: none;
 }
@@ -661,13 +635,14 @@ export default {
 }
 
 .timesheet_column > div:nth-child(2){
-	top: 26px;
+    top: 26px;
 	position: sticky;
 	pointer-events: none;
 	user-select: none;
 }
 
 .dateCell{
+    font-size: smaller;
 	background-color: white;
 	width: 100%;
 	height: 25px;
@@ -675,6 +650,8 @@ export default {
 	border-bottom: 1px solid black;
     color: black;
     user-select: none;
+    display: flex;
+    justify-content: center;
 }
 .cell{
 	width: 100%;
@@ -682,6 +659,7 @@ export default {
 	max-height: 25px;
 	border-bottom: 1px dashed black;
     color: black;
+    pointer-events: none;
 }
 .infoCell{
 	background-color: white;
@@ -692,8 +670,11 @@ export default {
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
     font-weight: bold;
+    font-size: small;
     color: black;
     user-select: none;
+    display: flex;
+    justify-content: center;
 }
 
 .infoCellA{
@@ -705,8 +686,11 @@ export default {
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
     font-weight: bold;
+    font-size: small;
     color: black;
     user-select: none;
+    display: flex;
+    justify-content: center;
 }
 
 .totalCellOne{
@@ -718,7 +702,10 @@ export default {
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
     color: black;
+    font-size: small;
     user-select: none;
+    display: flex;
+    justify-content: center;
 }
 
 .totalCellTwo{
@@ -730,26 +717,11 @@ export default {
 	border-bottom: 1px solid black;
 	border-right: 1px solid black;
     font-weight: bold;
+    font-size: small;
     color: black;
     user-select: none;
-}
-
-#user_selection_tip{
-	position: absolute;
-	transform: translate(-50%,-50%);
-	height: 40px;
-	min-width: 130px;
-	width: 130px;
-	background-color: #FFFFFF;
-	border-radius: 5px;
-	box-shadow: 0px 0px 10px -5px white inset,
-				0px 4px 16px -16px black;
-	font-size: 12px;
-	user-select: none;
-	pointer-events: none;
-	z-index: 100;
-    color: black;
-    user-select: none;
+    display: flex;
+    justify-content: center;
 }
 
 .tool_tip{
@@ -758,6 +730,64 @@ export default {
 
 .hidden {
 	display: none !important;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 25px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #0bd933;
+  transition: .2s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    aspect-ratio: 1;
+    width: 21px;
+    left: 6px;
+    bottom: 2px;
+    background-color: white;
+    transition: .2s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 
 ion-toolbar{
