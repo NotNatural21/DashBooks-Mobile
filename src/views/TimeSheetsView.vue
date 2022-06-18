@@ -122,7 +122,6 @@ export default {
             totalList: [],
             infoList: [],
             weekInterval: '',
-            previousTime: 0,
             timeInterval: 0,
             cellClicked: false,
             name: userDict['projects'][this.$route.params.projectID]['name']
@@ -478,11 +477,6 @@ export default {
 }
 </script>
 <style scoped>
-#container{
-    display: flex;
-    align-items: center;
-	justify-content: center;
-}
 #time_Container{
     display: flex;
     align-items: center;
@@ -491,25 +485,6 @@ export default {
     width: 100%;
     height: 100%;
     gap: 5px;
-}
-#top_title{
-    margin-top: 5px;
-	height: 30px;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-    width: 650px;
-    box-shadow: 0px 0px 10px -5px white inset, 0px 4px 16px -16px black;
-    border-radius: 10px;
-    background-color: #ffffff56;
-    font-family: 'Lato';
-}
-
-#top_title > p{
-	font-size: 17px;
-    padding: 0px 4px;
-    color: white;
 }
 #weeks_container{
 	display: flex;
@@ -606,10 +581,6 @@ export default {
     padding: 0px 10px;
     display: flex;
     justify-content: center;
-}
-
-.colour_item:hover{
-	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.082), 0 10px 10px rgba(0, 0, 0, 0.11);
 }
 
 .timesheet_column{
@@ -722,14 +693,6 @@ export default {
     user-select: none;
     display: flex;
     justify-content: center;
-}
-
-.tool_tip{
-	border: 2px solid black;
-}
-
-.hidden {
-	display: none !important;
 }
 
 .switch {
