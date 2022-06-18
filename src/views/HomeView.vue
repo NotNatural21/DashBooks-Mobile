@@ -77,6 +77,9 @@
                         </div>
                     </template>
                 </div>
+                <div id="total_container" v-if="showTotal">
+                    <p id="total_amount" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)" @click="removeTotal">Total: ${{ numberWithCommas(total) }}</p>
+                </div>
             </div>
         </ion-content>
     </ion-page>
@@ -296,7 +299,7 @@ p{
     justify-content: center;
     align-items: center;
     gap: 8px;
-    width: 98%;
+    width: 96%;
     height: 40px;
     border-radius: 2px;
 }
@@ -327,6 +330,33 @@ p{
     width: 70px;
     display: flex;
     justify-content: center;
+}
+#total_container{
+    z-index: 500;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    pointer-events: none;
+}
+
+#total_amount{
+    width: 15%;
+    height: 5%;
+    min-width: 250px;
+    display: flex;
+    color: white;
+    border-radius: 25px 0px 0px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    pointer-events: all;
+    font-size: larger;
+    position: fixed;
+    bottom: 0;
 }
 </style>
 
