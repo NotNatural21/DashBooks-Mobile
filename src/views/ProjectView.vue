@@ -30,7 +30,6 @@
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import userDict from "../../public/userData.json"
-import $ from 'jquery'
 export default {
     name: 'ProjectView',
     components: {
