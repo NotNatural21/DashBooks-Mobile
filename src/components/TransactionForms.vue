@@ -565,7 +565,7 @@ input {
 	gap: 10px;
 	padding: 20px;
 	background-color: white;
-    border: 1px solid $accent;
+    border: 1px solid black;
 	border-radius: 5px;
 	transition: 0.3s ease all;
 }
