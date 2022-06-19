@@ -47,22 +47,25 @@
                     <p id="trans_pop_item">Item: </p>
                     <p id="trans_pop_payee">Payee: </p>
                     <p id="trans_pop_amount">Amount: </p>
-                    <div class="button_item glossy" style="background-color: var(--primary);" @click="''">Edit</div>
+                    <div class="button_item glossy" style="background-color: var(--primary);" @click="editTransaction">Edit</div>
                     <div class="button_item glossy" style="background-color: red;" @click="deleteTransaction">Delete</div>
                     <div class="button_item glossy" style="background-color: var(--secondary);" @click="showTransPop=false">Cancel</div>
                 </div>
             </div>
+            <TransactionForms :transform="current_request_form" :hasReceipt="receiptStatus" @cancelled="cancelForm" />
         </ion-content>
     </ion-page>
 </template>
 
 <script>
+import TransactionForms from '@/components/TransactionForms.vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import userDict from "../../public/userData.json"
 import $ from 'jquery'
 export default {
     name: 'TimeSheetsView',
     components: {
+        TransactionForms,
         IonButtons,
         IonContent,
         IonHeader,
@@ -76,7 +79,9 @@ export default {
             userObj: userDict,
             recordDict: {},
             transactionsArray: [],
+            current_request_form: '',
             yearID: '',
+            receiptStatus: false,
             showTransPop: false,
             sortAmountWay: false,
             sortCategoryWay: true,
@@ -103,6 +108,7 @@ export default {
 		}
 		this.recordDict = userDict['records'][yearID];
         this.transactionsArray = Object.values(this.recordDict['transactions'])
+        this.sortDateWay = true;
         this.sortDate();
 		this.yearID = yearID;
 		setTimeout(() => {
@@ -119,6 +125,8 @@ export default {
 			this.recordDict = userDict['records'][$(`#year_selection option:selected`).attr('data')];
 			//this.calculatePivotTable();
             this.transactionsArray = Object.values(this.recordDict['transactions'])
+            this.sortDateWay = true;
+            this.sortDate();
 		},
         showTrans(event, DICT, ID){
             this.currentID = ID;
@@ -141,6 +149,8 @@ export default {
                 this.currentID = '';
                 this.showTransPop = false;
                 this.transactionsArray = Object.values(this.recordDict['transactions'])
+                this.sortDateWay = true;
+                this.sortDate();
             }
         },
         sortCategory(){
@@ -177,7 +187,32 @@ export default {
                     return (firstDate > secondDate) ? 1 : ((secondDate > firstDate) ? -1 : 0)
                 });
             }
-        }
+        },
+        editTransaction(){
+			this.current_request_form = 'editTransaction';
+			const ID = this.currentID
+			let transDict = this.recordDict['transactions']
+			transDict[ID]['receiptID'] != '' ? this.receiptStatus = true : this.receiptStatus = false
+			setTimeout(() => {
+				let newDate = transDict[ID]['date'].split("/").reverse().join("-");
+				$(`#edit_transID`).attr('transid', ID)
+				$(`#edit_transID`).attr('transyear', $(`#year_selection option:selected`).attr('data'))
+				$(`#edit_trans_date`).val(newDate)
+				$(`#edit_trans_item`).val(transDict[ID]['item'])
+				$(`#edit_trans_amount`).val(transDict[ID]['amount'])
+				$(`#edit_trans_account`).val(transDict[ID]['account']);
+				$(`.vs__selected`).text(transDict[ID]['payee'])
+				$(`#edit_trans_type`).val(transDict[ID]['type']);
+				$(`#edit_trans_category`).val(transDict[ID]['category']);
+			}, 1)
+		},
+        cancelForm(){
+            this.current_request_form=``;
+            this.transactionsArray = Object.values(this.recordDict['transactions'])
+            this.sortDateWay = true;
+            this.sortDate();
+            this.showTransPop = false
+        },
     }
 };
 </script>
