@@ -179,7 +179,6 @@ export default {
                 this.recordRequest = form;
             }
             this.$nextTick(() => {
-                console.log($(".form_container")[0])
                 $(".form_container")[0].scrollIntoView();
                 $(".form_container").css({"touch-action":"none"});
                 $(".form").css({"touch-action":"all"});
@@ -272,7 +271,6 @@ export default {
             const ID = $(event.target).attr('data');
             this.recordRequest = form;
             this.$nextTick(() => {
-                console.log($(".form_container")[0])
                 $(".form_container")[0].scrollIntoView();
                 $('.page').bind('touchmove', function(){$(".form_container")[0].scrollIntoView()})
                 if(form.includes('Category')){

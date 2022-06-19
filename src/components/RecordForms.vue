@@ -282,9 +282,4 @@ select{
     background: white;
 }
 
-.button_item{
-    padding: 12px 15px;
-    border-radius: 18px;
-    color: white;
-}
 </style>

@@ -120,11 +120,19 @@ export default {
 .glossy{
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.12) 51%, rgba(0, 0, 0, 0.04));
 }
+.button_item{
+    padding: 12px 15px;
+    border-radius: 18px;
+    color: white;
+}
 .page{
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
+}
+p{
+	margin: 0px !important;
 }
 </style>
 <style scoped>
