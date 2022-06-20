@@ -220,8 +220,8 @@ export default {
     justify-content: center;
 }
 .tile{
-	width: 250px;
-	min-width: 250px;
+	width: 280px;
+	min-width: 280px;
 	height: 100%;
     min-height: 250px;
     max-height: 250px;

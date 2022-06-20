@@ -180,8 +180,6 @@ export default {
             }
             this.$nextTick(() => {
                 $(".form_container")[0].scrollIntoView();
-                $(".form_container").css({"touch-action":"none"});
-                $(".form").css({"touch-action":"all"});
             });
         },
         cancelForm(){
@@ -224,7 +222,6 @@ export default {
             this.projectRequest = form;
             this.$nextTick(() => {
                 $(".form_container")[0].scrollIntoView();
-                $('.page').bind('touchmove', function(){$(".form_container")[0].scrollIntoView()})
                 if(form.includes('Project')){
                     $(`#edit_projectID`).attr(`projectid`, ID);
                     $(`#edit_project_name`).val(userDict['projects'][ID]['name']);
@@ -245,7 +242,6 @@ export default {
             this.invoiceRequest = form;
             this.$nextTick(() => {
                 $(".form_container")[0].scrollIntoView();
-                $('.page').bind('touchmove', function(){$(".form_container")[0].scrollIntoView()})
                 if(form.includes('User')){
                     $(`#edit_user`).val(userDict['users'][ID]['user']);
 					$(`#edit_user_name`).val(userDict['users'][ID]['name']);
@@ -272,7 +268,6 @@ export default {
             this.recordRequest = form;
             this.$nextTick(() => {
                 $(".form_container")[0].scrollIntoView();
-                $('.page').bind('touchmove', function(){$(".form_container")[0].scrollIntoView()})
                 if(form.includes('Category')){
 					let category = $(event.target).attr(`category`)
                     $(`#edit_category_old`).attr(`oldcategory`, category);

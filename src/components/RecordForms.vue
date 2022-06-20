@@ -258,7 +258,7 @@ input {
     border: 1px solid black;
 	border-radius: 5px;
 	transition: 0.3s ease all;
-    height: 320px;
+    height: 88%;
     overflow-y: auto;
 }
 

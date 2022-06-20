@@ -134,6 +134,12 @@ export default {
 p{
 	margin: 0px !important;
 }
+.form_container{
+    touch-action: none;
+}
+.form{
+    touch-action: all;
+}
 </style>
 <style scoped>
 ion-menu ion-content {
