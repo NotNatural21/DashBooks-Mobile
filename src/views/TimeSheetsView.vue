@@ -310,9 +310,12 @@ export default {
             let element = document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
 			const cellID = $(element).attr('cellid');
             if(cellID != undefined){
-                if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
-                    this.selectCell(element);
-                    this.selectedCellsList.push(cellID);
+                const cellNum = parseInt(cellID.substring(1));
+                if(cellNum < this.projectDict['timeList'].length){
+                    if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
+                        this.selectCell(element);
+                        this.selectedCellsList.push(cellID);
+                    }
                 }
             }
 
