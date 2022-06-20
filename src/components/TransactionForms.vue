@@ -255,7 +255,7 @@
 
 <script>
 import userDict from "../../public/userData.json"
-import { generateID, reDoDate, addToDate } from '../../public/generalFunctions.js';
+import { generateID} from '../../public/generalFunctions.js';
 import $ from 'jquery';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';

@@ -130,7 +130,7 @@
 
 <script>
 import userDict from "../../public/userData.json"
-import { generateID, reDoDate, addToDate } from '../../public/generalFunctions.js';
+import { generateID } from '../../public/generalFunctions.js';
 import $ from 'jquery'
 export default {
     name: 'InvoiceForms',

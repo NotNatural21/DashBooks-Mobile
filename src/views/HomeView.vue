@@ -143,6 +143,7 @@ export default {
                     this.netData.expenses += objDict.amount;
                     objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
                     this.expenseSum[objDict.category] += objDict.amount;
+                    objKey;
                 }
             }
         }else{
@@ -195,6 +196,7 @@ export default {
                     objDict.category in this.incomeSum ? this.incomeSum[objDict.category] += 0: this.incomeSum[objDict.category] = 0;
                     this.incomeSum[objDict.category] += objDict.amount;
 				}else if(objDict.type == 'Debit'){
+                    objKey;
 					this.netData.expenses += objDict.amount
                     objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
                     this.expenseSum[objDict.category] += objDict.amount 
