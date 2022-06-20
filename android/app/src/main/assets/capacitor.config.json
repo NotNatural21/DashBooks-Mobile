@@ -1,0 +1,6 @@
+{
+	"appId": "com.NotNatural.DashBooks",
+	"appName": "DashBooks",
+	"webDir": "public",
+	"bundledWebRuntime": false
+}
