@@ -94,6 +94,7 @@
 <script>
 import userDict from "../../public/userData.json"
 import $ from 'jquery'
+import { Dialog } from '@capacitor/dialog';
 export default {
     name: 'RecordForms',
     emits: ["cancelled"],
@@ -126,9 +127,13 @@ export default {
  
 			this.$emit('cancelled', '');
         },
-        deleteCategory(){
+        async deleteCategory(){
             let category =  $(`#edit_category_old`).attr(`oldcategory`);
-            if(confirm(`Are you sure you want to delete ${category}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${category}?`,
+            });
+            if(value){
                 delete userDict['records']['categories'][category];
             }
             this.$emit('cancelled', '');
@@ -161,9 +166,13 @@ export default {
  
 			this.$emit('cancelled', '');
         },
-        deletePayee(){
+        async deletePayee(){
             let account =  $(`#edit_payee_old`).attr(`oldpayee`);
-            if(confirm(`Are you sure you want to delete ${account}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${account}?`,
+            });
+            if(value){
                 const index = userDict['records']['payee'].indexOf(account);
                 if (index > -1) {
                     userDict['records']['payee'].splice(index, 1);
@@ -198,9 +207,13 @@ export default {
  
 			this.$emit('cancelled', '');
         },
-        deleteAccount(){
+        async deleteAccount(){
             let account =  $(`#edit_account_old`).attr(`oldaccount`);
-            if(confirm(`Are you sure you want to delete ${account}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${account}?`,
+            });
+            if(value){
                 const index = userDict['records']['accounts'].indexOf(account);
                 if (index > -1) {
                     userDict['records']['accounts'].splice(index, 1);

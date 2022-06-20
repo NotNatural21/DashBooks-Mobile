@@ -109,6 +109,7 @@
 <script>
 import userDict from "../../public/userData.json"
 import { generateID, reDoDate, addToDate } from '../../public/generalFunctions.js';
+import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'
 export default {
     name: 'ProjectForms',
@@ -275,9 +276,13 @@ export default {
             }
             this.$emit('cancelled', '');
         },
-        deleteProject(){
+        async deleteProject(){
             const projectID = $(`#edit_projectID`).attr('projectid');
-            if(confirm(`Are you sure you want to delete ${userDict['projects'][projectID]['name']}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${userDict['projects'][projectID]['name']}?`,
+            });
+            if(value){
                 delete userDict['projects'][projectID];
             }
             this.$emit('cancelled', '');
@@ -315,9 +320,13 @@ export default {
 			userDict['colours'][colourID] = {'name': colourName, 'rate': colourRate, 'colour': colour};
 			this.$emit('cancelled', '');
         },
-        deleteColour(){
+        async deleteColour(){
             const colourID = $(`#edit_colourID`).attr('colourid');
-            if(confirm(`Are you sure you want to delete ${userDict['colours'][colourID]['name']}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${userDict['colours'][colourID]['name']}? This will remove it from everywhere.`,
+            });
+            if(value){
                 delete userDict['colours'][colourID];
                 for(const[projectID, projectDict] of Object.entries(userDict['projects'])){
                     for(const [weekID, weekDict] of Object.entries(projectDict['weeks'])){

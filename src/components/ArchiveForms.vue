@@ -18,6 +18,7 @@
 <script>
 import userDict from "../../public/userData.json"
 import $ from 'jquery'
+import { Dialog } from '@capacitor/dialog';
 export default {
     name: 'ArchiveForms',
     emits: ["cancelled"],
@@ -33,9 +34,13 @@ export default {
             }
             this.$emit('cancelled', '');
         },
-        deleteArchive(){
+        async deleteArchive(){
             const projectID = $(`#edit_projectID_archive`).attr('projectid');
-            if(confirm(`Are you sure you want to delete ${userDict['archive']['projects'][projectID]['name']}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${userDict['archive']['projects'][projectID]['name']}?`,
+            });
+            if(value){
                 delete userDict['archive']['projects'][projectID];
             }
             this.$emit('cancelled', '');

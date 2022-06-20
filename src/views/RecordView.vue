@@ -191,6 +191,7 @@
 import TransactionForms from '@/components/TransactionForms.vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import userDict from "../../public/userData.json"
+import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'
 export default {
     name: 'TimeSheetsView',
@@ -285,9 +286,13 @@ export default {
                 $('#trans_pop_amount').text(`Amount: $${this.numberWithCommas(DICT.amount)}`)
             });
         },
-        deleteTransaction(){
+        async deleteTransaction(){
             const ID = this.currentID;
-            if(confirm(`Are you sure you want to delete this transaction?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete this transaction?`,
+            });
+            if(value){
                 delete userDict['records'][this.yearID]['transactions'][ID];
                 this.currentID = '';
                 this.showTransPop = false;
