@@ -569,6 +569,7 @@ input {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    width: 100%;
 }
 
 .side{

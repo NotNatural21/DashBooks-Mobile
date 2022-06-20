@@ -478,7 +478,7 @@ select{
     height: 95%;
     overflow: auto;
     position: absolute;
-    z-index: 10;
+    z-index: 50;
     margin: auto;
     left: 0;
     right: 0;
@@ -497,7 +497,6 @@ select{
     justify-content: center;
     align-items: center;
     width: 88%;
-    min-height: 85%;
     height: 85%;
     border-radius: 15px;
     border: 1px solid black;
@@ -509,6 +508,7 @@ select{
 .tables_container{
     width: 98%;
     height: 98%;
+    min-height: 74px;
     background-color: white;
     border-radius: 15px;
     overflow: auto;
