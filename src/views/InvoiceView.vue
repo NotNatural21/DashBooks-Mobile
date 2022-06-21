@@ -219,6 +219,7 @@
 
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { PDFGenerator } from '@awesome-cordova-plugins/pdf-generator';
 import userDict from "../../public/userData.json"
 import { generateID } from '../../public/generalFunctions.js';
 import $ from 'jquery'
@@ -251,7 +252,8 @@ export default {
             addToRecord: true,
             currencyConversion: false,
             currencyFrom: 'NZD',
-            currencyTo: ''
+            currencyTo: '',
+            fileName: '',
         }
     },
     mounted(){
@@ -460,6 +462,8 @@ export default {
 			$('#client_city_invoice').text(clientDict['city']);
 			$('#client_country_invoice').text(clientDict['country']);	
             
+            this.fileName = `${invoiceDate.split('/').join("-")} - ${invoiceID}`
+
             //Add To Records
             if($('#invoice_add_records')[0].checked){
                 const transID = generateID(userDict);
@@ -491,22 +495,20 @@ export default {
 				this.printInvoice();
 			}, 1)
 		},
-		printInvoice(id="invoice_page"){
-			let html = `<title>Print Preview</title><link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDhINWMtMS42NiAwLTMgMS4zNC0zIDN2Nmg0djRoMTJ2LTRoNHYtNmMwLTEuNjYtMS4zNC0zLTMtM3ptLTMgMTFIOHYtNWg4djV6bTMtN2MtLjU1IDAtMS0uNDUtMS0xcy40NS0xIDEtMSAxIC40NSAxIDEtLjQ1IDEtMSAxem0tMS05SDZ2NGgxMlYzeiIvPjwvc3ZnPg==">`;
-			/* 
-			$('link').each(function() { // find all <link tags that have
-				if ($(this).attr('rel').indexOf('stylesheet') !=-1) { // rel="stylesheet"
-					html += `<link rel="stylesheet" href="${$(this).attr("href")}" />`;
-				}
-			});
-			 */
-			html += `<link rel="stylesheet" href="/invoicePrint.css" />`
-			html += '<body onload="window.focus(); window.print()">'+$("#"+id).html()+'</body>';
-			let w = window.open("","_blank", 'width=900,height=900,nodeIntegration=yes');
-			if (w) {
-				w.document.write(html); 
-				w.document.close() 
-			}
+		async printInvoice(id="invoice_page"){
+			let html = ``;
+			html += `<head><link rel="stylesheet" href="file:///android_asset/www/invoicePrint.css"></head>`
+			html += '<body>'+$("#"+id).html()+'</body>';
+            let options = {
+                documentSize: 'A4',
+                type: 'share',
+                fileName: `${this.fileName}`
+            }
+            document.addEventListener('deviceready', function(){
+                PDFGenerator.fromData(html, options)
+                    .then((stats)=> console.log('status', stats) )   // ok..., ok if it was able to handle the file to the OS.  
+                    .catch((err)=>console.err(err))
+            })
 		}
     }
 };
