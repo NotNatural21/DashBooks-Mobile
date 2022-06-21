@@ -14,11 +14,13 @@
                     </ion-list>
                     <ion-list>
                         <ion-menu-toggle auto-hide="false">
-                            <ion-item @click="''" lines="none" detail="false" class="hydrated">
+                            <ion-item @click="triggerUpload" lines="none" detail="false" class="hydrated">
                                 <ion-icon slot="start" :ios="cloudUploadOutline" :md="cloudUploadOutline"></ion-icon>
                                 <ion-label>Upload Save</ion-label>
                             </ion-item>
+                            <input type="file" id="uploadSave" accept=".dbss" @change="uploadSaveContents"/>
                         </ion-menu-toggle>
+
                         <ion-menu-toggle auto-hide="false">
                             <ion-item @click="''" lines="none" detail="false" class="hydrated">
                                 <ion-icon slot="start" :ios="downloadOutline" :md="downloadOutline"></ion-icon>
@@ -34,8 +36,11 @@
 </template>
 
 <script>
+import { saveChecker, userDict } from './main.ts';
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { ref } from 'vue';
+import JSZip from 'jszip';
+import $ from 'jquery'
 import { useRoute } from 'vue-router';
 import { gridOutline, settingsOutline, briefcaseOutline, receiptOutline, fileTrayFullOutline, helpCircleOutline, cloudUploadOutline, downloadOutline } from 'ionicons/icons';
 
@@ -112,6 +117,23 @@ export default {
             downloadOutline,
             isSelected: (url) => url === route.path ? 'selected' : ''
         }
+    },
+    mounted(){
+        console.log(userDict)
+    },
+    methods: {
+        triggerUpload(){
+            $('#uploadSave').click()
+        },
+        async uploadSaveContents(){
+            let uploadedFile = $('#uploadSave').prop('files')[0]
+            let u8arr = new Uint8Array(await uploadedFile.arrayBuffer())
+            let zipFile = await JSZip.loadAsync(u8arr);
+            let u8data = zipFile.files['userData.ssdb']._data.compressedContent;
+            let string = new TextDecoder().decode(u8data);
+            let userDictRead = saveChecker(JSON.parse(string));
+            console.log(userDictRead)
+        }
     }
 };
 </script>
@@ -142,6 +164,13 @@ p{
 }
 </style>
 <style scoped>
+#uploadSave{
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+}
+
+
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }
