@@ -29,7 +29,7 @@
 
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 export default {
     name: 'ProjectView',
     components: {

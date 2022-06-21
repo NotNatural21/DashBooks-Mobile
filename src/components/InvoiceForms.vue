@@ -129,7 +129,7 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { generateID } from '../../public/generalFunctions.js';
 import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'

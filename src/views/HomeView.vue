@@ -87,7 +87,7 @@
 
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import $ from 'jquery'
 export default {
     name: 'HomeView',
@@ -149,7 +149,6 @@ export default {
         }else{
             userDict['records'][this.currentYear] = {assets: {}, transactions: {}}
         }
-        console.log(userDict)
     },
     methods: {
         markDone(event, projectID, weekID){

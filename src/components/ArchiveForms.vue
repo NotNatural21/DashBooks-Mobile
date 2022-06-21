@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import $ from 'jquery'
 import { Dialog } from '@capacitor/dialog';
 export default {

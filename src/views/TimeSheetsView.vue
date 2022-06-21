@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { addToDate, dateToAmerica } from '../../public/generalFunctions.js';
 import $ from 'jquery'

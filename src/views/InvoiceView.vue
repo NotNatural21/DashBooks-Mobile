@@ -220,7 +220,7 @@
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { PDFGenerator } from '@awesome-cordova-plugins/pdf-generator';
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { generateID } from '../../public/generalFunctions.js';
 import $ from 'jquery'
 export default {
@@ -284,7 +284,6 @@ export default {
             this.currencyConversion = $('#invoice_currency_status')[0].checked;
         },
         exhangeCurrency(amount, from, to){
-            //Remove API key
             let url = `https://v6.exchangerate-api.com/v6/${process.env.CURRENCY_API_KEY}/latest/${from}`;
             let exchangedAmount;
             let toRate = 1;
@@ -547,6 +546,7 @@ input {
     flex-direction: column;
 	align-items: center;
 	font-family: 'Segoe UI', sans-serif;
+    width: 98%;
 }
 
 .form{

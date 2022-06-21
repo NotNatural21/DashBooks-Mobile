@@ -95,7 +95,7 @@
                         </template>
                     </div>
                 </div>
-                <div class="tables_outer">
+                <div class="tables_outer" style="min-height: 492px">
                     <div class="tables_container">
                         <div class="records_heading sticky heading" >
                             <p>Pivot Table</p>
@@ -159,7 +159,7 @@
 
                         <template v-if="showGST">
                             <div class="p_column heading sticky" style="margin-top: 10px; width: 100%;">GST Inclusive</div>
-                            <div class="bottom_section" style="display: flex; margin-bottom: 2px;">
+                            <div class="bottom_section" style="display: flex;">
                                 <div class="pivot_col heading sticky">
                                     <template v-if="loaded">
                                         <p class="p_column">Tax To Pay:</p>
@@ -190,7 +190,7 @@
 <script>
 import TransactionForms from '@/components/TransactionForms.vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'
 export default {
