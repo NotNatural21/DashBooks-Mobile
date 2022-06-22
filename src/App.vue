@@ -39,6 +39,8 @@
 import { saveChecker, userDict } from './main.ts';
 import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonRouterOutlet, IonSplitPane } from '@ionic/vue';
 import { ref } from 'vue';
+import { App } from '@capacitor/app';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import JSZip from 'jszip';
 import $ from 'jquery'
 import { useRoute } from 'vue-router';
@@ -119,7 +121,13 @@ export default {
         }
     },
     mounted(){
-        console.log(userDict)
+        App.addListener('appStateChange', ({ isActive }) => {
+            console.log('App state changed. Is active?', isActive);
+            if(!isActive){
+                let string = JSON.stringify(userDict)
+                Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Documents, recursive: false, encoding: Encoding.UTF8 })
+            }
+        });
     },
     methods: {
         triggerUpload(){
@@ -133,6 +141,9 @@ export default {
             let string = new TextDecoder().decode(u8data);
             let userDictRead = saveChecker(JSON.parse(string));
             console.log(userDictRead)
+            for(const[key, entry] of Object.entries(userContents)){
+                userDict[key] = entry;
+            }
         }
     }
 };

@@ -7,7 +7,6 @@ import router from './router';
 import { reactive } from 'vue';
 import { IonicVue } from '@ionic/vue';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import { App } from '@capacitor/app';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/vue/css/core.css';
@@ -198,7 +197,7 @@ try {
 }
 try {
     let listFiles = await Filesystem.readdir({ path: "DashBooks", directory: Directory.Documents })
-    if(!(Object.values(listFiles).indexOf('userData.ssdb') > -1)) {
+    if(!(Object.values(listFiles)[0].indexOf('userData.ssdb') > -1)) {
         let string = JSON.stringify(userDictMaster)
         await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Documents, recursive: false, encoding: Encoding.UTF8 })
     }
@@ -208,9 +207,6 @@ try {
 userDictRead = await Filesystem.readFile({ path: "DashBooks/userData.ssdb", directory: Directory.Documents, encoding: Encoding.UTF8 })
 let parsedUser = JSON.parse(userDictRead['data']);
 export const userDict = reactive({...parsedUser})
-
-
-
 
 
 const app = createApp(App)

@@ -497,6 +497,7 @@ export default {
     background-color: #ffffff3b;
     width: 100%;
     overflow-x: auto;
+    margin-top: 3px;
 }
 
 #weeks_container > div{
@@ -504,6 +505,7 @@ export default {
 	width: 100px;
 	height: 30px;
     min-height: 30px;
+    border: 1px solid black;
 }
 
 #switch_container{

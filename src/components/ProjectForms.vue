@@ -59,7 +59,7 @@
             <input id="edit_project_archive" type="checkbox"/>
 
 			<fieldset>
-                <div class="button_item glossy" style="background-color: var(--primary);" @click="createProject">Save Project</div>
+                <div class="button_item glossy" style="background-color: var(--primary);" @click="editProject">Save Project</div>
                 <div class="button_item glossy" style="background-color: red;" @click="deleteProject">Delete</div>
                 <div class="button_item glossy" style="background-color: var(--secondary);" @click="this.$emit('cancelled', '')">Cancel</div>
 			</fieldset>

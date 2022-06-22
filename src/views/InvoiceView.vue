@@ -129,7 +129,7 @@
                             
                         </div>
                     </div>
-                    <div class="button_item glossy" style="background-color: var(--primary);" @click="generateInvoice">Print Invoice</div>
+                    <div id="genButton" class="button_item glossy" style="background-color: var(--primary);" @click="generateInvoice">Print Invoice</div>
                 </div>	
             </div>
 
@@ -257,7 +257,7 @@ export default {
         }
     },
     mounted(){
-         this.$nextTick(() => {
+        this.$nextTick(() => {
             Object.keys(userDict['projects']).forEach((projectID, index) => {
                 let weekID = Object.keys(userDict['projects'][projectID]['weeks'])[0]
                 if(userDict['projects'][projectID]['weeks'][weekID]['invoiced']){
@@ -277,6 +277,12 @@ export default {
                 this.projectKeys.push(projectID)
                 this.projectKeys.push(projectID)
             })
+        }
+        if(!(this.isProjects && this.isUsers && this.isClients)){
+            $('#genButton').addClass('disable')
+        }
+        if(!(this.addToRecord && this.isAccounts)){
+            $('#genButton').addClass('disable')
         }
     },
     methods: {
@@ -344,6 +350,17 @@ export default {
         },
         changeState(){
             this.addToRecord = $('#invoice_add_records')[0].checked;
+            if(this.addToRecord == false){
+                if(!(this.isProjects && this.isUsers && this.isClients)){
+                    $('#genButton').addClass('disable')
+                }else{
+                    $('#genButton').removeClass('disable')
+                }
+            }else{
+                if(this.isAccounts == false){
+                    $('#genButton').addClass('disable')
+                }
+            }
         },
         getFirstLastDate(arr){
             let dateObjArr = [];
@@ -630,6 +647,11 @@ input[type="checkbox"]{
     color: white;
     display: flex;
     justify-content: center;
+}
+
+.disable{
+    background-color: grey !important;
+    pointer-events: none;
 }
 
 ion-toolbar{
