@@ -185,27 +185,37 @@ export function saveChecker(saveFile){
 }
 const userDictMaster = {"projects": {}, "clients": {}, "colours": {'colourWhite':{'name': 'Clear', 'colour': '#ffffff'}}, "users": {}, "records": {"accounts": [],"payee": [], "categories": {}, 'savedTransactions': {}, 'headingStates': [ 'month', 'date', 'type', 'account', 'category', 'item', 'payee', 'amount', "receiptID" ]}, "saveVersion": 23, "showGST": true, "version": "", "timeLogged": {"01/01/1970": {'hours': 0, 'pay': 0}}, 'archive': {'projects': {}}}
 let userDictRead = undefined;
+let listFiles = await Filesystem.readdir({ path: "", directory: Directory.Data })
 try {
-    await Filesystem.mkdir({ path: "DashBooks", directory: Directory.Documents, recursive: false })
-} catch (error) {
-    //Hi Dad
-}
-try {
-    await Filesystem.mkdir({ path: "DashBooks/Receipts", directory: Directory.Documents, recursive: false })
-} catch (error) {
-    //Hi Dad
-}
-try {
-    let listFiles = await Filesystem.readdir({ path: "DashBooks", directory: Directory.Documents })
-    if(!(Object.values(listFiles)[0].indexOf('userData.ssdb') > -1)) {
-        let string = JSON.stringify(userDictMaster)
-        await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Documents, recursive: false, encoding: Encoding.UTF8 })
+    if(!(Object.values(listFiles)[0].indexOf('DashBooks') > -1)) {
+        await Filesystem.mkdir({ path: "DashBooks", directory: Directory.Data, recursive: false })
     }
 } catch (error) {
-    //Hi Dad
+    console.log(error)
 }
-userDictRead = await Filesystem.readFile({ path: "DashBooks/userData.ssdb", directory: Directory.Documents, encoding: Encoding.UTF8 })
-let parsedUser = JSON.parse(userDictRead['data']);
+let listFilesDash = await Filesystem.readdir({ path: "DashBooks", directory: Directory.Data })
+try {
+    if(!(Object.values(listFilesDash)[0].indexOf('Receipts') > -1)) {
+        await Filesystem.mkdir({ path: "DashBooks/Receipts", directory: Directory.Data, recursive: false })
+    }
+} catch (error) {
+    console.log(error)
+}
+try {
+    if(!(Object.values(listFilesDash)[0].indexOf('userData.ssdb') > -1)) {
+        let string = JSON.stringify(userDictMaster)
+        await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Data, recursive: true, encoding: Encoding.UTF8 })
+    }
+} catch (error) {
+    console.log(error)
+}
+let parsedUser = undefined;
+try {
+    userDictRead = await Filesystem.readFile({ path: "DashBooks/userData.ssdb", directory: Directory.Data, encoding: Encoding.UTF8 })
+    parsedUser = JSON.parse(userDictRead['data']);
+} catch (error) {
+    parsedUser = userDictMaster;
+}
 export const userDict = reactive({...parsedUser})
 
 

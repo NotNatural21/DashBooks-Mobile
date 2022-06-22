@@ -124,8 +124,7 @@ export default {
         App.addListener('appStateChange', ({ isActive }) => {
             console.log('App state changed. Is active?', isActive);
             if(!isActive){
-                let string = JSON.stringify(userDict)
-                Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Documents, recursive: false, encoding: Encoding.UTF8 })
+                this.saveUser();
             }
         });
     },
@@ -141,9 +140,13 @@ export default {
             let string = new TextDecoder().decode(u8data);
             let userDictRead = saveChecker(JSON.parse(string));
             console.log(userDictRead)
-            for(const[key, entry] of Object.entries(userContents)){
+            for(const[key, entry] of Object.entries(userDictRead)){
                 userDict[key] = entry;
             }
+        },
+        async saveUser(){
+            let string = JSON.stringify(userDict)
+            await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Data, recursive: false, encoding: Encoding.UTF8 })
         }
     }
 };
