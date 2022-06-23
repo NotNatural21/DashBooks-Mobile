@@ -133,7 +133,8 @@ export default {
             $('#uploadSave').click()
         },
         async uploadSaveContents(){
-            let uploadedFile = $('#uploadSave').prop('files')[0]
+            let uploadedFile = $('#uploadSave').prop('files')[0];
+            let uploadFileName = uploadedFile.name.split('.')[0]
             let u8arr = new Uint8Array(await uploadedFile.arrayBuffer())
             let zipFile = await JSZip.loadAsync(u8arr);
             let u8data = zipFile.files['userData.ssdb']._data.compressedContent;
@@ -143,15 +144,56 @@ export default {
                 userDict[key] = entry;
             }
             this.saveUser();
-            console.log(this.$root.$refs)
             this.$router.push({ name: 'DashBoard', params: {} })/
             this.$root.$refs.DASHBOARD.loadPage();
             document.getElementById("uploadSave").value = "";
+
+            //Deal with any Receipts
+            Filesystem.rmdir({ path: "DashBooks/Receipts", directory: Directory.Data, recursive: true })
+            Filesystem.mkdir({ path: "DashBooks/Receipts", directory: Directory.Data, recursive: true })
+
+            console.log(zipFile.files)
+            for(const[key, imgData] of Object.entries(zipFile.files)){
+                if(key.includes('Receipts/') && key != `Receipts/`){
+                    let imgName = key.split('/')[1]
+                    let imageData = this.bytesToBase64(imgData._data.compressedContent);
+                    Filesystem.writeFile({ 
+                        path: `DashBooks/Receipts/${imgName}`, 
+                        data: imageData, 
+                        directory: Directory.Data, 
+                        recursive: false
+                    })
+                }
+            }
 
         },
         async saveUser(){
             let string = JSON.stringify(userDict)
             await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Data, recursive: false, encoding: Encoding.UTF8 })
+        },
+        bytesToBase64(bytes){
+            const base64abc = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"];
+            const base64codes = [ 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 62, 255, 255, 255, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 255, 255, 255, 0, 255, 255, 255, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 255, 255, 255, 255, 255, 255, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51];
+            let result = '', i, l = bytes.length;
+            for (i = 2; i < l; i += 3) {
+                result += base64abc[bytes[i - 2] >> 2];
+                result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
+                result += base64abc[((bytes[i - 1] & 0x0F) << 2) | (bytes[i] >> 6)];
+                result += base64abc[bytes[i] & 0x3F];
+            }
+            if (i === l + 1) { // 1 octet yet to write
+                result += base64abc[bytes[i - 2] >> 2];
+                result += base64abc[(bytes[i - 2] & 0x03) << 4];
+                result += "==";
+            }
+            if (i === l) { // 2 octets yet to write
+                result += base64abc[bytes[i - 2] >> 2];
+                result += base64abc[((bytes[i - 2] & 0x03) << 4) | (bytes[i - 1] >> 4)];
+                result += base64abc[(bytes[i - 1] & 0x0F) << 2];
+                result += "=";
+            }
+            return result;
+
         }
     }
 };
