@@ -139,10 +139,15 @@ export default {
             let u8data = zipFile.files['userData.ssdb']._data.compressedContent;
             let string = new TextDecoder().decode(u8data);
             let userDictRead = saveChecker(JSON.parse(string));
-            console.log(userDictRead)
             for(const[key, entry] of Object.entries(userDictRead)){
                 userDict[key] = entry;
             }
+            this.saveUser();
+            console.log(this.$root.$refs)
+            this.$router.push({ name: 'DashBoard', params: {} })/
+            this.$root.$refs.DASHBOARD.loadPage();
+            document.getElementById("uploadSave").value = "";
+
         },
         async saveUser(){
             let string = JSON.stringify(userDict)

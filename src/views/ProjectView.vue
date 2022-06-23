@@ -11,7 +11,7 @@
         <ion-content> 
             <div class="page">
                 <h4>TimeSheets:</h4>
-                <p>You have logged {{ userObj['timeLogged'][today]['hours'].toFixed(2) }}H and earnt ${{ numberWithCommas(userObj['timeLogged'][today]['pay']) }} today</p>
+                <p>You have logged {{ hours }}H and earnt ${{ numberWithCommas(pay) }} today</p>
                 <div class="item_container">
                     <div class="items">
                         <div v-for="(projectDict, projectID) in userObj['projects']" :key="projectDict" class="list_item" :data="projectID" @click="$router.push({ name: 'TimeSheets', params: { 'projectID': projectID } })" :style="{background: `radial-gradient(circle, ${projectDict['colour'][1]} 0%, ${projectDict['colour'][0]} 100%)`, color: `${pickTextColorBasedOnBgColor(projectDict['colour'][1])}`}">
@@ -44,7 +44,9 @@ export default {
     data(){
         return{
             userObj: userDict,
-            today: ''
+            today: '',
+            hours: "0.00",
+            pay: "0.00"
         }
     },
     beforeMount(){
@@ -53,10 +55,13 @@ export default {
         let mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
         let yyyy = date.getFullYear();
         this.today = mm + '/' + dd + '/' + yyyy;
+        console.log(userDict)
         if(!(this.today in userDict['timeLogged'])){
             userDict['timeLogged'] = {}
             userDict['timeLogged'][this.today] = {'hours': 0, 'pay': 0};
         }
+        this.hours = userDict['timeLogged'][this.today]['hours'].toFixed(2)
+        this.pay = userDict['timeLogged'][this.today]['pay'].toFixed(2)
     },
     methods: {
         pickTextColorBasedOnBgColor(bgColor) {
