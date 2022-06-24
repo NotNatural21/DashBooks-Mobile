@@ -21,8 +21,8 @@
                             <p>Total Income for {{ currentYear }}</p>
                         </div>
                         <div class="bar_grapgh" style="overflow-y: auto; justify-content: flex-start; margin-top: 10px;">
-                            <template v-for="(item, keys) in incomeSum" :key="keys">
-                                <div class="incomeBar" :style="{width: `${(220 * Math.abs(item / netData.income))}px`}">{{ keys }}: ${{ numberWithCommas(item) }}</div>
+                            <template v-for="incDict in incomeArray" :key="incDict">
+                                <div class="incomeBar" :style="{width: `${(220 * Math.abs(incDict.amount / netData.income))}px`}">{{ incDict.key }}: ${{ numberWithCommas(incDict.amount) }}</div>
                             </template>
                         </div>
                     </div>
@@ -35,8 +35,8 @@
                             <p>Total Expenses for {{ currentYear }}</p>
                         </div>
                         <div class="bar_grapgh" style="justify-content: flex-start; margin-top: 10px;">
-                            <template v-for="(item, keys) in expenseSum" :key="keys">
-                                <div class="expenseBar" :style="{width: `${(220 * Math.abs(item / netData.expenses))}px`}">{{ keys }}: ${{ numberWithCommas(item) }}</div>
+                            <template v-for="expDict in expensesArray" :key="expDict">
+                                <div class="expenseBar" :style="{width: `${(220 * Math.abs(expDict.amount / netData.expenses))}px`}">{{ expDict.key }}: ${{ numberWithCommas(expDict.amount) }}</div>
                             </template>
                         </div>
                     </div>
@@ -105,8 +105,8 @@ export default {
             userObj: userDict,
             currentYear: '',
 			netData: {'income': 0, 'expenses': 0},
-            expenseSum: {},
-            incomeSum: {},
+            incomeArray: {},
+            expensesArray: {},
 			total: 0,
 			years: [],
             projectDict: {},
@@ -156,20 +156,24 @@ export default {
 			this.currentYear = $(event.target).attr('data');
             this.netData.income = 0;
             this.netData.expenses = 0;
-            this.expenseSum = {};
-            this.incomeSum = {};
+
+            let expenseSum = {};
+            let incomeSum = {};
 			for(const [objKey, objDict] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
 				if(objDict.type == 'Credit'){
 					this.netData.income += objDict.amount;
-                    objDict.category in this.incomeSum ? this.incomeSum[objDict.category] += 0: this.incomeSum[objDict.category] = 0;
-                    this.incomeSum[objDict.category] += objDict.amount;
+                    objDict.category in incomeSum ? incomeSum[objDict.category] += 0: incomeSum[objDict.category] = 0;
+                    incomeSum[objDict.category] += objDict.amount;
 				}else if(objDict.type == 'Debit'){
                     objKey;
 					this.netData.expenses += objDict.amount
-                    objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
-                    this.expenseSum[objDict.category] += objDict.amount 
+                    objDict.category in expenseSum ? expenseSum[objDict.category] += 0: expenseSum[objDict.category] = 0;
+                    expenseSum[objDict.category] += objDict.amount 
 				}
 			}
+            this.incomeArray = Object.entries(incomeSum).map(( [key, amount] ) => ({ key, amount }));
+            this.expensesArray = Object.entries(expenseSum).map(( [key, amount] ) => ({ key, amount }));
+            this.sortAmount();
 		},
         loadPage(){
             console.log("loadPage Ran")
@@ -190,25 +194,34 @@ export default {
             this.projectDict = userDict['projects']
             this.netData.income = 0;
             this.netData.expenses = 0;
-            this.expenseSum = {};
-            this.incomeSum = {};
+
+            let expenseSum = {};
+            let incomeSum = {};
             if(this.currentYear in userDict['records']){
                 for(const [objKey, objDict] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
                     if(objDict.type == 'Credit'){
                         this.netData.income += objDict.amount;
-                        objDict.category in this.incomeSum ? this.incomeSum[objDict.category] += 0: this.incomeSum[objDict.category] = 0;
-                        this.incomeSum[objDict.category] += objDict.amount;
+                        objDict.category in incomeSum ? incomeSum[objDict.category] += 0: incomeSum[objDict.category] = 0;
+                        incomeSum[objDict.category] += objDict.amount;
                     }else if(objDict.type == 'Debit' && userDict['records']['categories'][objDict.category]){
                         this.netData.expenses += objDict.amount;
-                        objDict.category in this.expenseSum ? this.expenseSum[objDict.category] += 0: this.expenseSum[objDict.category] = 0;
-                        this.expenseSum[objDict.category] += objDict.amount;
+                        objDict.category in expenseSum ? expenseSum[objDict.category] += 0: expenseSum[objDict.category] = 0;
+                        expenseSum[objDict.category] += objDict.amount;
                         objKey;
                     }
                 }
             }else{
                 userDict['records'][this.currentYear] = {assets: {}, transactions: {}}
             }
-        }
+            this.incomeArray = Object.entries(incomeSum).map(( [key, amount] ) => ({ key, amount }));
+            this.expensesArray = Object.entries(expenseSum).map(( [key, amount] ) => ({ key, amount }));
+            this.sortAmount();
+
+        },
+        sortAmount(){
+            this.incomeArray.sort((a, b) => a.amount - b.amount);
+            this.expensesArray.sort((a, b) => a.amount - b.amount);
+        },
     }
 };
 </script>
