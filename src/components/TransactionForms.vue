@@ -254,9 +254,10 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { generateID} from '../../public/generalFunctions.js';
 import $ from 'jquery';
+import { Dialog } from '@capacitor/dialog';
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 export default {
@@ -392,9 +393,13 @@ export default {
             userDict['records']['savedTransactions'][savedID] = {'account': account, 'type': type, 'item': item, 'category': category, 'amount': amount};
 			this.$emit('cancelled', '');
         },
-        deleteSaved(){
+        async deleteSaved(){
             const savedID = $('#edit_savedID').attr('savedid');
-            if(confirm(`Are you sure you want to delete this saved Transaction?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete this saved Transaction?`,
+            });
+            if(value){
                 delete userDict['records']['savedTransactions'][savedID]
             }
             this.$emit('cancelled', '');
@@ -498,10 +503,14 @@ export default {
             userDict['records'][yearID]['assets'][assetID] = {'item': item, 'vendor': vendor, 'date': date, 'unitCost': unitCost, 'units': units, 'total': total}
 			this.$emit('cancelled', '');
 		},
-		deleteAsset(){
+		async deleteAsset(){
             const ID = $('#edit_assetID').attr('assetid');
 			const YEAR = $('#edit_assetID').attr('assetyear');
-            if(confirm(`Are you sure you want to delete this Asset?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete this Asset?`,
+            });
+            if(value){
                 delete userDict['records'][YEAR]['assets'][ID];
             }
             this.$emit('cancelled', '');

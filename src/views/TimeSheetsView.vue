@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
 import { addToDate, dateToAmerica } from '../../public/generalFunctions.js';
 import $ from 'jquery'
@@ -310,9 +310,12 @@ export default {
             let element = document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
 			const cellID = $(element).attr('cellid');
             if(cellID != undefined){
-                if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
-                    this.selectCell(element);
-                    this.selectedCellsList.push(cellID);
+                const cellNum = parseInt(cellID.substring(1));
+                if(cellNum < this.projectDict['timeList'].length){
+                    if(this.cellClicked && (!this.selectedCellsList.includes(cellID))){
+                        this.selectCell(element);
+                        this.selectedCellsList.push(cellID);
+                    }
                 }
             }
 
@@ -494,6 +497,7 @@ export default {
     background-color: #ffffff3b;
     width: 100%;
     overflow-x: auto;
+    margin-top: 3px;
 }
 
 #weeks_container > div{
@@ -501,6 +505,7 @@ export default {
 	width: 100px;
 	height: 30px;
     min-height: 30px;
+    border: 1px solid black;
 }
 
 #switch_container{

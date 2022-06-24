@@ -129,7 +129,7 @@
                             
                         </div>
                     </div>
-                    <div class="button_item glossy" style="background-color: var(--primary);" @click="generateInvoice">Print Invoice</div>
+                    <div id="genButton" class="button_item glossy" style="background-color: var(--primary);" @click="generateInvoice">Print Invoice</div>
                 </div>	
             </div>
 
@@ -219,7 +219,8 @@
 
 <script>
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import userDict from "../../public/userData.json"
+import { PDFGenerator } from '@awesome-cordova-plugins/pdf-generator';
+import { userDict } from '../main.ts';
 import { generateID } from '../../public/generalFunctions.js';
 import $ from 'jquery'
 export default {
@@ -251,11 +252,12 @@ export default {
             addToRecord: true,
             currencyConversion: false,
             currencyFrom: 'NZD',
-            currencyTo: ''
+            currencyTo: '',
+            fileName: '',
         }
     },
     mounted(){
-         this.$nextTick(() => {
+        this.$nextTick(() => {
             Object.keys(userDict['projects']).forEach((projectID, index) => {
                 let weekID = Object.keys(userDict['projects'][projectID]['weeks'])[0]
                 if(userDict['projects'][projectID]['weeks'][weekID]['invoiced']){
@@ -276,13 +278,18 @@ export default {
                 this.projectKeys.push(projectID)
             })
         }
+        if(!(this.isProjects && this.isUsers && this.isClients)){
+            $('#genButton').addClass('disable')
+        }
+        if(!(this.addToRecord && this.isAccounts)){
+            $('#genButton').addClass('disable')
+        }
     },
     methods: {
         changeCurrencyStatus(){
             this.currencyConversion = $('#invoice_currency_status')[0].checked;
         },
         exhangeCurrency(amount, from, to){
-            //Remove API key
             let url = `https://v6.exchangerate-api.com/v6/${process.env.CURRENCY_API_KEY}/latest/${from}`;
             let exchangedAmount;
             let toRate = 1;
@@ -343,6 +350,17 @@ export default {
         },
         changeState(){
             this.addToRecord = $('#invoice_add_records')[0].checked;
+            if(this.addToRecord == false){
+                if(!(this.isProjects && this.isUsers && this.isClients)){
+                    $('#genButton').addClass('disable')
+                }else{
+                    $('#genButton').removeClass('disable')
+                }
+            }else{
+                if(this.isAccounts == false){
+                    $('#genButton').addClass('disable')
+                }
+            }
         },
         getFirstLastDate(arr){
             let dateObjArr = [];
@@ -460,6 +478,8 @@ export default {
 			$('#client_city_invoice').text(clientDict['city']);
 			$('#client_country_invoice').text(clientDict['country']);	
             
+            this.fileName = `${invoiceDate.split('/').join("-")} - ${invoiceID}`
+
             //Add To Records
             if($('#invoice_add_records')[0].checked){
                 const transID = generateID(userDict);
@@ -491,22 +511,20 @@ export default {
 				this.printInvoice();
 			}, 1)
 		},
-		printInvoice(id="invoice_page"){
-			let html = `<title>Print Preview</title><link rel="shortcut icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0Ij48cGF0aCBkPSJNMCAwaDI0djI0SDB6IiBmaWxsPSJub25lIi8+PHBhdGggZD0iTTE5IDhINWMtMS42NiAwLTMgMS4zNC0zIDN2Nmg0djRoMTJ2LTRoNHYtNmMwLTEuNjYtMS4zNC0zLTMtM3ptLTMgMTFIOHYtNWg4djV6bTMtN2MtLjU1IDAtMS0uNDUtMS0xcy40NS0xIDEtMSAxIC40NSAxIDEtLjQ1IDEtMSAxem0tMS05SDZ2NGgxMlYzeiIvPjwvc3ZnPg==">`;
-			/* 
-			$('link').each(function() { // find all <link tags that have
-				if ($(this).attr('rel').indexOf('stylesheet') !=-1) { // rel="stylesheet"
-					html += `<link rel="stylesheet" href="${$(this).attr("href")}" />`;
-				}
-			});
-			 */
-			html += `<link rel="stylesheet" href="/invoicePrint.css" />`
-			html += '<body onload="window.focus(); window.print()">'+$("#"+id).html()+'</body>';
-			let w = window.open("","_blank", 'width=900,height=900,nodeIntegration=yes');
-			if (w) {
-				w.document.write(html); 
-				w.document.close() 
-			}
+		async printInvoice(id="invoice_page"){
+			let html = ``;
+			html += `<head><link rel="stylesheet" href="file:///android_asset/www/invoicePrint.css"></head>`
+			html += '<body>'+$("#"+id).html()+'</body>';
+            let options = {
+                documentSize: 'A4',
+                type: 'share',
+                fileName: `${this.fileName}`
+            }
+            document.addEventListener('deviceready', function(){
+                PDFGenerator.fromData(html, options)
+                    .then((stats)=> console.log('status', stats) )   // ok..., ok if it was able to handle the file to the OS.  
+                    .catch((err)=>console.err(err))
+            })
 		}
     }
 };
@@ -545,6 +563,7 @@ input {
     flex-direction: column;
 	align-items: center;
 	font-family: 'Segoe UI', sans-serif;
+    width: 98%;
 }
 
 .form{
@@ -628,6 +647,11 @@ input[type="checkbox"]{
     color: white;
     display: flex;
     justify-content: center;
+}
+
+.disable{
+    background-color: grey !important;
+    pointer-events: none;
 }
 
 ion-toolbar{

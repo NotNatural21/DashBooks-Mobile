@@ -142,7 +142,7 @@ import ProjectForms from '../components/ProjectForms'
 import ArchiveForms from '../components/ArchiveForms'
 import InvoiceForms from '../components/InvoiceForms'
 import RecordForms from '../components/RecordForms'
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import $ from 'jquery'
 export default {
     name: 'HomeView',

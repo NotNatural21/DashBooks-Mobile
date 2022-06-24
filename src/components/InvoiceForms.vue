@@ -129,8 +129,9 @@
 </template>
 
 <script>
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
 import { generateID } from '../../public/generalFunctions.js';
+import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'
 export default {
     name: 'InvoiceForms',
@@ -173,9 +174,13 @@ export default {
 			userDict['users'][userID] = {'user': user, 'name': name, 'addOne': addOne, 'addTwo': addTwo, 'city': city, 'country': country, 'contact': contact};
 			this.$emit('cancelled', '');
         },
-        deleteUser(){
+        async deleteUser(){
             const userID = $(`#edit_userID`).attr('userid');
-            if(confirm(`Are you sure you want to delete ${userDict['users'][userID]['user']}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete ${userDict['users'][userID]['user']}?`,
+            });
+            if(value){
                 delete userDict['users'][userID];
             }
             this.$emit('cancelled', '');
@@ -214,9 +219,13 @@ export default {
 			userDict['clients'][clientID] = {'client': client, 'name': name, 'addOne': addOne, 'addTwo': addTwo, 'city': city, 'country': country, 'contact': contact};
 			this.$emit('cancelled', '');
         },
-        deleteClient(){
+        async deleteClient(){
             const clientID = $(`#edit_clientID`).attr('clientid');
-            if(confirm(`Are you sure you want to delete ${userDict['clients'][clientID]['client']}?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you'd like to press the red button?`,
+            });
+            if(value){
                 delete userDict['clients'][clientID];
             }
             this.$emit('cancelled', '');

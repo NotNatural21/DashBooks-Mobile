@@ -95,7 +95,7 @@
                         </template>
                     </div>
                 </div>
-                <div class="tables_outer">
+                <div class="tables_outer" style="min-height: 492px">
                     <div class="tables_container">
                         <div class="records_heading sticky heading" >
                             <p>Pivot Table</p>
@@ -159,7 +159,7 @@
 
                         <template v-if="showGST">
                             <div class="p_column heading sticky" style="margin-top: 10px; width: 100%;">GST Inclusive</div>
-                            <div class="bottom_section" style="display: flex; margin-bottom: 2px;">
+                            <div class="bottom_section" style="display: flex;">
                                 <div class="pivot_col heading sticky">
                                     <template v-if="loaded">
                                         <p class="p_column">Tax To Pay:</p>
@@ -190,7 +190,8 @@
 <script>
 import TransactionForms from '@/components/TransactionForms.vue';
 import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
-import userDict from "../../public/userData.json"
+import { userDict } from '../main.ts';
+import { Dialog } from '@capacitor/dialog';
 import $ from 'jquery'
 export default {
     name: 'TimeSheetsView',
@@ -224,36 +225,41 @@ export default {
             colNames: ["Category:", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Total"]
         }
     },
+    created() {
+        this.$root.$refs.RECORDS = this;
+    },
     mounted(){
-        let date = new Date();
-		let thisYear = date.getFullYear();
-		let month = date.getMonth();
-		let yearID;
-		if(month < 3){ //April is 3rd month
-			yearID = `${thisYear - 1} - ${thisYear}`;
-		}else{
-            yearID = `${thisYear} - ${thisYear + 1}`;
-		}
-		if(Object.keys(userDict['records']).length == 4){
-            userDict['records'][`${thisYear - 1} - ${thisYear}`] = {'transactions': {}, 'assets': {}};
-			userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
-		}
-		if(!Object.keys(userDict['records']).includes(yearID)){
-            userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
-		}
-		this.recordDict = userDict['records'][yearID];
-        this.transactionsArray = Object.values(this.recordDict['transactions'])
-        this.sortDateWay = true;
-        this.sortDate();
-		this.yearID = yearID;
-		setTimeout(() => {
-            $(`#year_selection`).val(yearID);
-			$('#show_gst_checkbox').prop('checked', userDict['showGST']);
+        this.getTransArray();
+        this.$nextTick(() => {
+            $(`#year_selection`).val(this.yearID);
+            $('#show_gst_checkbox').prop('checked', userDict['showGST']);
             this.showGST = userDict['showGST'];
-			this.calculatePivotTable()
-		}, 1)
+            this.calculatePivotTable()
+        })
     },
     methods: {
+        getTransArray(){
+            let date = new Date();
+            let thisYear = date.getFullYear();
+            let month = date.getMonth();
+            let yearID;
+            if(month < 3){ //April is 3rd month
+                this.yearID = `${thisYear - 1} - ${thisYear}`;
+            }else{
+                this.yearID = `${thisYear} - ${thisYear + 1}`;
+            }
+            if(Object.keys(userDict['records']).length == 4){
+                userDict['records'][`${thisYear - 1} - ${thisYear}`] = {'transactions': {}, 'assets': {}};
+                userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
+            }
+            if(!Object.keys(userDict['records']).includes(this.yearID)){
+                userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
+            }
+            this.recordDict = userDict['records'][this.yearID];
+            this.transactionsArray = Object.values(this.recordDict['transactions'])
+            this.sortDateWay = true;
+            this.sortDate();
+        },
         createForm(form){
             this.current_request_form = form
             this.$nextTick(() => {
@@ -285,9 +291,13 @@ export default {
                 $('#trans_pop_amount').text(`Amount: $${this.numberWithCommas(DICT.amount)}`)
             });
         },
-        deleteTransaction(){
+        async deleteTransaction(){
             const ID = this.currentID;
-            if(confirm(`Are you sure you want to delete this transaction?`)){
+            const { value } = await Dialog.confirm({
+                title: 'Confirm',
+                message: `Are you sure you want to delete this transaction?`,
+            });
+            if(value){
                 delete userDict['records'][this.yearID]['transactions'][ID];
                 this.currentID = '';
                 this.showTransPop = false;
