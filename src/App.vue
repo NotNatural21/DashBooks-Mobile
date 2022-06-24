@@ -41,6 +41,7 @@ import { IonApp, IonContent, IonIcon, IonItem, IonLabel, IonList, IonListHeader,
 import { ref } from 'vue';
 import { App } from '@capacitor/app';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Dialog } from '@capacitor/dialog';
 import JSZip from 'jszip';
 import $ from 'jquery'
 import { useRoute } from 'vue-router';
@@ -134,8 +135,14 @@ export default {
         });
     },
     methods: {
-        triggerUpload(){
-            $('#uploadSave').click()
+        async triggerUpload(){
+            const { value } = await Dialog.confirm({
+                title: 'Warning',
+                message: `Are you sure you to upload a save file? This will replace all current data and cannot be undone. If you would like to keep your current data, please use "Export Data"`,
+            });
+            if(value){
+                $('#uploadSave').click()
+            }
         },
         async uploadSaveContents(){
             let uploadedFile = $('#uploadSave').prop('files')[0];
@@ -149,9 +156,12 @@ export default {
                 userDict[key] = entry;
             }
             this.saveUser();
+            let currentpage = this.$route.name
             this.$router.push({ name: 'DashBoard', params: {} })/
             this.$root.$refs.DASHBOARD.loadPage();
-            this.$root.$refs.RECORDS.getTransArray();
+            if(currentpage == "Records"){
+                this.$root.$refs.RECORDS.getTransArray();
+            }
             document.getElementById("uploadSave").value = "";
 
             //Deal with any Receipts
@@ -171,6 +181,10 @@ export default {
                     })
                 }
             }
+            Dialog.alert({
+                title: 'Success',
+                message: 'Your save file has been successfully imported',
+            });
 
         },
         async saveUser(){
@@ -189,13 +203,29 @@ export default {
                 receipt.file(name, imageArr['data'], {base64: true})
             }
             let today = new Date();
+            let seconds = today.getSeconds();
+            let minutes = today.getMinutes();
+            let hour = today.getHours();
             let dd = String(today.getDate()).padStart(2, '0');
             let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
             let yyyy = today.getFullYear();
+            
 
-            today = yyyy + mm + dd;
+            today = `${yyyy}${mm}${dd}${hour}${minutes}${seconds}`;
             zip.generateAsync({type:"base64"}).then(function(cont) {
-                Filesystem.writeFile({ path: `DashBooks/DBmanual-${today}.dbss`, data: cont, directory: Directory.Documents, recursive: true })
+                try {
+                    Filesystem.writeFile({ path: `DashBooks/DBExport-${today}.dbss`, data: cont, directory: Directory.Documents, recursive: true }).then(function () {
+                        Dialog.alert({
+                            title: 'Success',
+                            message: 'The data has been successfully exported. You can find your save in "Internal Storage -> Documents -> DashBooks." ',
+                        });
+                    })
+                } catch (error) {
+                    Dialog.alert({
+                        title: 'Sorry! It looks like there was error',
+                        message: `DashBooks failed with error: ${error}`,
+                    });
+                }
             });
         },
         bytesToBase64(bytes){
