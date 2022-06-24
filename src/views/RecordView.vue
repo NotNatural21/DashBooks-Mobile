@@ -225,36 +225,41 @@ export default {
             colNames: ["Category:", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Total"]
         }
     },
+    created() {
+        this.$root.$refs.RECORDS = this;
+    },
     mounted(){
-        let date = new Date();
-		let thisYear = date.getFullYear();
-		let month = date.getMonth();
-		let yearID;
-		if(month < 3){ //April is 3rd month
-			yearID = `${thisYear - 1} - ${thisYear}`;
-		}else{
-            yearID = `${thisYear} - ${thisYear + 1}`;
-		}
-		if(Object.keys(userDict['records']).length == 4){
-            userDict['records'][`${thisYear - 1} - ${thisYear}`] = {'transactions': {}, 'assets': {}};
-			userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
-		}
-		if(!Object.keys(userDict['records']).includes(yearID)){
-            userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
-		}
-		this.recordDict = userDict['records'][yearID];
-        this.transactionsArray = Object.values(this.recordDict['transactions'])
-        this.sortDateWay = true;
-        this.sortDate();
-		this.yearID = yearID;
-		setTimeout(() => {
-            $(`#year_selection`).val(yearID);
-			$('#show_gst_checkbox').prop('checked', userDict['showGST']);
+        this.getTransArray();
+        this.$nextTick(() => {
+            $(`#year_selection`).val(this.yearID);
+            $('#show_gst_checkbox').prop('checked', userDict['showGST']);
             this.showGST = userDict['showGST'];
-			this.calculatePivotTable()
-		}, 1)
+            this.calculatePivotTable()
+        })
     },
     methods: {
+        getTransArray(){
+            let date = new Date();
+            let thisYear = date.getFullYear();
+            let month = date.getMonth();
+            let yearID;
+            if(month < 3){ //April is 3rd month
+                this.yearID = `${thisYear - 1} - ${thisYear}`;
+            }else{
+                this.yearID = `${thisYear} - ${thisYear + 1}`;
+            }
+            if(Object.keys(userDict['records']).length == 4){
+                userDict['records'][`${thisYear - 1} - ${thisYear}`] = {'transactions': {}, 'assets': {}};
+                userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
+            }
+            if(!Object.keys(userDict['records']).includes(this.yearID)){
+                userDict['records'][`${thisYear} - ${thisYear + 1}`] = {'transactions': {}, 'assets': {}};
+            }
+            this.recordDict = userDict['records'][this.yearID];
+            this.transactionsArray = Object.values(this.recordDict['transactions'])
+            this.sortDateWay = true;
+            this.sortDate();
+        },
         createForm(form){
             this.current_request_form = form
             this.$nextTick(() => {

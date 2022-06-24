@@ -22,7 +22,7 @@
                         </ion-menu-toggle>
 
                         <ion-menu-toggle auto-hide="false">
-                            <ion-item @click="''" lines="none" detail="false" class="hydrated">
+                            <ion-item @click="exportData" lines="none" detail="false" class="hydrated">
                                 <ion-icon slot="start" :ios="downloadOutline" :md="downloadOutline"></ion-icon>
                                 <ion-label>Export Data</ion-label>
                             </ion-item>
@@ -60,6 +60,11 @@ export default {
         IonMenuToggle, 
         IonRouterOutlet, 
         IonSplitPane,
+    },
+    data(){
+        return{
+            fullFilePath: ''
+        }
     },
     setup() {
         const selectedIndex = ref(0);
@@ -146,6 +151,7 @@ export default {
             this.saveUser();
             this.$router.push({ name: 'DashBoard', params: {} })/
             this.$root.$refs.DASHBOARD.loadPage();
+            this.$root.$refs.RECORDS.getTransArray();
             document.getElementById("uploadSave").value = "";
 
             //Deal with any Receipts
@@ -170,6 +176,27 @@ export default {
         async saveUser(){
             let string = JSON.stringify(userDict)
             await Filesystem.writeFile({ path: "DashBooks/userData.ssdb", data: string, directory: Directory.Data, recursive: false, encoding: Encoding.UTF8 })
+        },
+        async exportData(){
+            let zip = new JSZip();
+            let usedata = await Filesystem.readFile({ path: "DashBooks/userData.ssdb", directory: Directory.Data })
+            zip.file("userData.ssdb", usedata['data'], {base64: true})
+
+            const receipt = zip.folder("Receipts")
+            let receiptFiles = await Filesystem.readdir({ path: "DashBooks/Receipts", directory: Directory.Data })
+            for (const name of receiptFiles['files']) {
+                let imageArr = await Filesystem.readFile({ path: `DashBooks/Receipts/${name}`, directory: Directory.Data })
+                receipt.file(name, imageArr['data'], {base64: true})
+            }
+            let today = new Date();
+            let dd = String(today.getDate()).padStart(2, '0');
+            let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+            let yyyy = today.getFullYear();
+
+            today = yyyy + mm + dd;
+            zip.generateAsync({type:"base64"}).then(function(cont) {
+                Filesystem.writeFile({ path: `DashBooks/DBmanual-${today}.dbss`, data: cont, directory: Directory.Documents, recursive: true })
+            });
         },
         bytesToBase64(bytes){
             const base64abc = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "+", "/"];
@@ -226,6 +253,12 @@ p{
 </style>
 <style scoped>
 #uploadSave{
+    width: 0px;
+    height: 0px;
+    opacity: 0;
+}
+
+#downloadSave{
     width: 0px;
     height: 0px;
     opacity: 0;
