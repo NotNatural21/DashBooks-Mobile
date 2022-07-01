@@ -66,7 +66,7 @@
                                     <template v-for="(weekDict, week) in item.weeks" :key="week">
                                         <div class="week" :style="`${weekDict.invoiced ? 'background-color: #53b700': !weekDict.invoiced && weekDict.invoiceSent ? 'background-color: #FFB135' : '' }`">
                                             <p style="font-size:large;">{{ weekDict.startDate }}</p>
-                                            <p class="week_total" @click="totalWeeks" :amount="weekDict.total">${{ numberWithCommas(weekDict.total) }}</p>
+                                            <p class="week_total" @click="totalWeeks" :amount="weekDict.total" :hours="weekDict.totalHours">${{ numberWithCommas(weekDict.total) }}</p>
                                             <p v-if="!weekDict.invoiceSent && checkDate(projID, week) && parseFloat(weekDict.total) != 0" style="color:#FF4F00">Invoice!</p>
                                             <p v-else-if="!weekDict.invoiced && weekDict.invoiceSent" class="mark_done right_width" @click="markDone(event, projID, week)">Paid</p>
                                             <p v-else class="right_width"></p>
@@ -78,7 +78,10 @@
                     </template>
                 </div>
                 <div id="total_container" v-if="showTotal">
-                    <p id="total_amount" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)" @click="removeTotal">Total: ${{ numberWithCommas(total) }}</p>
+                    <div id="total_amount" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)" @click="removeTotal">
+                        <p>Total Pay: ${{ numberWithCommas(total) }}</p>
+                        <p>Total Hours: {{ numberWithCommas(totalHours) }}H</p>
+                    </div>
                 </div>
             </div>
         </ion-content>
@@ -108,6 +111,7 @@ export default {
             incomeArray: {},
             expensesArray: {},
 			total: 0,
+			totalHours: 0,
 			years: [],
             projectDict: {},
             showTotal: false,
@@ -126,10 +130,12 @@ export default {
         removeTotal(){
             this.showTotal = false;
             this.total = 0
+            this.totalHours = 0
         },
         totalWeeks(event){
             this.showTotal = true;
             this.total += parseFloat($(event.target).attr('amount'))
+            this.totalHours += parseFloat($(event.target).attr('hours'))
         },
         numberWithCommas(num) {
 			return ((parseFloat(num).toFixed(2)).replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ","));
@@ -159,17 +165,19 @@ export default {
 
             let expenseSum = {};
             let incomeSum = {};
-			for(const [objKey, objDict] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
-				if(objDict.type == 'Credit'){
-					this.netData.income += objDict.amount;
-                    objDict.category in incomeSum ? incomeSum[objDict.category] += 0: incomeSum[objDict.category] = 0;
-                    incomeSum[objDict.category] += objDict.amount;
-				}else if(objDict.type == 'Debit'){
-                    objKey;
-					this.netData.expenses += objDict.amount
-                    objDict.category in expenseSum ? expenseSum[objDict.category] += 0: expenseSum[objDict.category] = 0;
-                    expenseSum[objDict.category] += objDict.amount 
-				}
+			for(const [objKey, OBJDICT] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
+                if(userDict['records']['categories'][OBJDICT.category]){
+                    if(OBJDICT.type == 'Credit'){
+                        this.netData.income += OBJDICT.amount;
+                        OBJDICT.category in incomeSum ? incomeSum[OBJDICT.category] += 0: incomeSum[OBJDICT.category] = 0;
+                        incomeSum[OBJDICT.category] += OBJDICT.amount;
+                    }else if(OBJDICT.type == 'Debit'){
+                        objKey;
+                        this.netData.expenses += OBJDICT.amount
+                        OBJDICT.category in expenseSum ? expenseSum[OBJDICT.category] += 0: expenseSum[OBJDICT.category] = 0;
+                        expenseSum[OBJDICT.category] += OBJDICT.amount 
+                    }
+                }
 			}
             this.incomeArray = Object.entries(incomeSum).map(( [key, amount] ) => ({ key, amount }));
             this.expensesArray = Object.entries(expenseSum).map(( [key, amount] ) => ({ key, amount }));
@@ -198,19 +206,21 @@ export default {
             let expenseSum = {};
             let incomeSum = {};
             if(this.currentYear in userDict['records']){
-                for(const [objKey, objDict] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
-                    if(objDict.type == 'Credit'){
-                        this.netData.income += objDict.amount;
-                        objDict.category in incomeSum ? incomeSum[objDict.category] += 0: incomeSum[objDict.category] = 0;
-                        incomeSum[objDict.category] += objDict.amount;
-                    }else if(objDict.type == 'Debit' && userDict['records']['categories'][objDict.category]){
-                        this.netData.expenses += objDict.amount;
-                        objDict.category in expenseSum ? expenseSum[objDict.category] += 0: expenseSum[objDict.category] = 0;
-                        expenseSum[objDict.category] += objDict.amount;
-                        objKey;
+                for(const [objKey, OBJDICT] of Object.entries(userDict['records'][this.currentYear]['transactions'])){
+                    if(userDict['records']['categories'][OBJDICT.category]){
+                        if(OBJDICT.type == 'Credit'){
+                            this.netData.income += OBJDICT.amount;
+                            OBJDICT.category in incomeSum ? incomeSum[OBJDICT.category] += 0: incomeSum[OBJDICT.category] = 0;
+                            incomeSum[OBJDICT.category] += OBJDICT.amount;
+                        }else if(OBJDICT.type == 'Debit'){
+                            objKey;
+                            this.netData.expenses += OBJDICT.amount
+                            OBJDICT.category in expenseSum ? expenseSum[OBJDICT.category] += 0: expenseSum[OBJDICT.category] = 0;
+                            expenseSum[OBJDICT.category] += OBJDICT.amount 
+                        }
                     }
                 }
-            }else{
+            } else {
                 userDict['records'][this.currentYear] = {assets: {}, transactions: {}}
             }
             this.incomeArray = Object.entries(incomeSum).map(( [key, amount] ) => ({ key, amount }));
@@ -364,14 +374,14 @@ export default {
 
 #total_amount{
     width: 15%;
-    height: 5%;
+    height: 7%;
     min-width: 250px;
     display: flex;
+    flex-direction: column;
     color: white;
     border-radius: 25px 0px 0px;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
     pointer-events: all;
     font-size: larger;
     position: fixed;
