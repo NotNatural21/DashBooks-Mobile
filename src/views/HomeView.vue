@@ -64,7 +64,10 @@
                             <div class="weeks_container">
                                 <div class="inner_weeks">
                                     <template v-for="(weekDict, week) in item.weeks" :key="week">
-                                        <div class="week" :style="`${weekDict.invoiced ? 'background-color: #53b700': !weekDict.invoiced && weekDict.invoiceSent ? 'background-color: #FFB135' : '' }`">
+                                        <div class="week" :style="{backgroundColor: weekDict.invoiced ? 
+                                            '#53b700' : !weekDict.invoiced && weekDict.invoiceSent ? 
+                                                '#FFB135' : 'unset' 
+                                            }">
                                             <p style="font-size:large;">{{ weekDict.startDate }}</p>
                                             <p class="week_total" @click="totalWeeks" :amount="weekDict.total" :hours="weekDict.totalHours">${{ numberWithCommas(weekDict.total) }}</p>
                                             <p v-if="!weekDict.invoiceSent && checkDate(projID, week) && parseFloat(weekDict.total) != 0" style="color:#FF4F00">Invoice!</p>
